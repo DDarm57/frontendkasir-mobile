@@ -1,118 +1,103 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import {View, Text, Image, TextInput, StyleSheet, Button} from 'react-native';
+import React, {useState} from 'react';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+export default function App() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  const handleEmailChange = text => {
+    setEmail(text);
+  };
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  const handlePasswordChange = text => {
+    setPassword(text);
+  };
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const handleLogin = async () => {
+    console.log(email);
+    console.log(password);
+
+    try {
+      const response = await fetch('http://127.0.0.1:8001/api/auth', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login Gagal');
+      }
+
+      const data = await response.json();
+
+      console.log('Data berhasil diterima:', data);
+    } catch (error) {
+      console.error('Terjadi Kesalahan: ', error);
+    }
+  };
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={{flex: 1}}>
+      <View style={styles.container}>
+        <Image
+          source={{
+            uri: 'https://ybpk-gkjw.org/wp-content/uploads/2022/12/219983.png',
+          }}
+          style={{width: 100, height: 100}}
+        />
+        <Text
+          style={{
+            fontSize: 30,
+            marginBottom: 30,
+            marginTop: 10,
+            fontWeight: 'bold',
+          }}>
+          LOGIN
+        </Text>
+        <Text style={styles.textLabel}>Username</Text>
+        <TextInput
+          style={styles.textInput}
+          placeholder="Username"
+          value={email}
+          onChangeText={handleEmailChange}
+        />
+        <Text style={styles.textLabel}>Password</Text>
+        <TextInput
+          style={styles.textInput}
+          placeholder="Password"
+          secureTextEntry={true}
+          value={password}
+          onChangeText={handlePasswordChange}
+        />
+        <View style={{marginTop: 20, width: '80%', height: '20%'}}>
+          <Button title="Login" onPress={handleLogin} />
+        </View>
+      </View>
     </View>
   );
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flexDirection: 'column',
+    alignItems: 'center',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  textLabel: {
+    fontSize: 16,
+    marginTop: 10,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  textInput: {
+    height: 40,
+    width: '80%',
+    borderRadius: 10,
+    borderColor: 'black',
+    borderWidth: 1,
+    marginBottom: 10,
   },
 });
-
-export default App;
